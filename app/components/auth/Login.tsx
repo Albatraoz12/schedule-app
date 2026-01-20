@@ -24,6 +24,7 @@ const Login = () => {
           id="email"
           placeholder="John@doe.com"
           autoComplete="email"
+          disabled={isLoading}
         />
       </div>
 
@@ -38,10 +39,17 @@ const Login = () => {
           id="password"
           autoComplete="current-password"
           placeholder="*************"
+          disabled={isLoading}
         />
       </div>
-      <button className="bg-green-600 text-white p-2 rounded cursor-pointer">
-        Login
+
+      {state.error && <p className="text-red-600 text-sm">{state.error}</p>}
+
+      <button
+        className="bg-green-600 text-white p-2 rounded cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed"
+        disabled={isLoading}
+      >
+        {isLoading ? "Loading..." : "Login"}
       </button>
     </form>
   );

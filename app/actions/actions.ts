@@ -31,8 +31,8 @@ export async function login(
     return { error: error.message, success: false };
   }
 
-  revalidatePath("/");
-  return { error: "", success: true };
+  revalidatePath("/", "layout");
+  redirect("/dashboard");
 }
 
 export async function logout() {
