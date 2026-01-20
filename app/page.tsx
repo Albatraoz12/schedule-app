@@ -1,11 +1,12 @@
-import Image from "next/image";
+import Login from "./components/auth/Login";
 
 export default function Home() {
   return (
-    <div className="">
-      <main className="">
-        <h1>Welcome to my Schedule app!</h1>
-      </main>
-    </div>
+    <main className="px-3 md:w-[80%] md:mx-auto">
+      <h1>Welcome to my Schedule app!</h1>
+      <section>
+        <Login />
+      </section>
+    </main>
   );
 }
