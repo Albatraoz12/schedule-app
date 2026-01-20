@@ -1,8 +1,18 @@
-import React from "react";
+"use client";
+import { login } from "@/app/actions/actions";
+import { useActionState } from "react";
 
 const Login = () => {
+  const [state, action, isLoading] = useActionState(login, {
+    error: "",
+    success: false,
+  });
+
   return (
-    <form className="flex flex-col gap-4 mx-auto w-full md:w-[80%] lg:w-[60%]">
+    <form
+      action={action}
+      className="flex flex-col gap-4 mx-auto w-full md:w-[80%] lg:w-[60%]"
+    >
       <div className="flex flex-col gap-1 w-full">
         <label htmlFor="email" className="text-sm font-medium">
           Email
