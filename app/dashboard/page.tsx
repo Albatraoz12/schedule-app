@@ -1,5 +1,6 @@
 import { logout } from "../actions/actions";
 import { getAuthClaims } from "@/lib/dal/user-dal";
+import CreateLession from "./components/CreateLession";
 
 async function page() {
   const user = await getAuthClaims();
@@ -13,6 +14,7 @@ async function page() {
       >
         Log out
       </button>
+      <CreateLession />
     </main>
   );
 }
