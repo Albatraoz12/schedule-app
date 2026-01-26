@@ -56,18 +56,41 @@ export async function createLession(
 
   if (!user) return { error: "Not authorized", success: false };
 
-  const date = formData.get("date");
-  const lession_start = formData.get("lessionStart");
-  const lession_end = formData.get("lessionEnd");
-  const name = formData.get("lessionName");
+  const date = formData.get("date") as string;
+  const lession_start = formData.get("lessionStart") as string;
+  const lession_end = formData.get("lessionEnd") as string;
+  const name = formData.get("lessionName") as string;
+  const room_id = "11b2cd02-06b4-4981-bf75-3a5f5f7d7f95";
 
   if (!date || !lession_start || !lession_end || !name)
     return {
-      error: "All fields must be filled ",
+      error: "All fields must be filled",
       success: false,
     };
 
   const supabase = await createClient();
+
+  const { data: conflictingLessons, error: checkError } = await supabase
+    .from("create_lession")
+    .select("id")
+    .eq("room_id", room_id)
+    .eq("date", date)
+    .or(`and(lession_start.lt.${lession_end},lession_end.gt.${lession_start})`);
+
+  if (checkError) {
+    return {
+      error: "Failed to check room availability",
+      success: false,
+    };
+  }
+
+  if (conflictingLessons && conflictingLessons.length > 0) {
+    return {
+      error: "This room is already booked during this time",
+      success: false,
+    };
+  }
+
   const { error } = await supabase
     .from("create_lession")
     .insert({
@@ -83,13 +106,13 @@ export async function createLession(
 
   if (error)
     return {
-      error: "You dont have promision to do this action",
+      error: "You don't have permission to do this action",
       success: false,
     };
 
   revalidatePath("/dashboard");
   return {
-    message: "Succsefully created a lession",
+    message: "Successfully created a lesson",
     success: true,
   };
 }
