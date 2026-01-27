@@ -6,7 +6,6 @@ import { getLessions } from "@/lib/dal/lessions/lessions-dal";
 async function page() {
   const user = await getAuthClaims();
   const lessions = await getLessions();
-  console.log(lessions);
 
   return (
     <main className="p-5">
