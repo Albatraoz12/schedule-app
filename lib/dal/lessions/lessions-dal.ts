@@ -40,6 +40,7 @@ export const getRooms = async () => {
   if (!user) {
     throw new Error('Unauthorized');
   }
+
   const supabase = await createClient();
 
   const { data, error } = await supabase.from('rooms').select(`*`);
