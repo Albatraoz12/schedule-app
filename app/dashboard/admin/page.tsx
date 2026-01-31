@@ -2,6 +2,7 @@ import { getAuthClaims } from "@/lib/dal/user-dal";
 import { getLessions, getRooms } from "@/lib/dal/lessions/lessions-dal";
 import { logout } from "@/app/actions/actions";
 import CreateLession from "../components/CreateLession";
+import Lessions from "../components/Lessions";
 
 async function page() {
   const user = await getAuthClaims();
@@ -21,18 +22,7 @@ async function page() {
       <CreateLession rooms={rooms} />
 
       <section className="my-4 border">
-        {lessions &&
-          lessions.length > 0 &&
-          lessions?.map((lession: any) => (
-            <div key={lession.id} className="py-2 border">
-              <p>{lession.name}</p>
-              <p>{lession.date}</p>
-              <p>{lession.lession_start}</p>
-              <p>{lession.lession_end}</p>
-              <p>{lession.class.class_name}</p>
-              <p>{lession.room.name}</p>
-            </div>
-          ))}
+        <Lessions lessions={lessions} />
       </section>
     </main>
   );

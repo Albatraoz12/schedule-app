@@ -1,6 +1,8 @@
-import { createClient } from '@/lib/supabase-server';
-import { cache } from 'react';
-import { getAuthClaims } from '../user-dal';
+"use server";
+import { createClient } from "@/lib/supabase-server";
+import { cache } from "react";
+import { getAuthClaims } from "../user-dal";
+import { revalidatePath } from "next/cache";
 
 export const getLessions = cache(async () => {
   const supabase = await createClient();
@@ -11,23 +13,23 @@ export const getLessions = cache(async () => {
   } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    throw new Error('Unauthorized');
+    throw new Error("Unauthorized");
   }
 
   const { data, error } = await supabase
-    .from('create_lession')
+    .from("create_lession")
     .select(
       `
       *,
       class:class_id(id, class_name, teacher_id),
       room:room_id(id, name)
-    `
+    `,
     )
-    .order('date', { ascending: true })
-    .order('lession_start', { ascending: true });
+    .order("date", { ascending: true })
+    .order("lession_start", { ascending: true });
 
   if (error) {
-    console.error('Error fetching lessons:', error);
+    console.error("Error fetching lessons:", error);
     return [];
   }
 
@@ -38,14 +40,46 @@ export const getRooms = async () => {
   const user = await getAuthClaims();
 
   if (!user) {
-    throw new Error('Unauthorized');
+    throw new Error("Unauthorized");
   }
 
   const supabase = await createClient();
 
-  const { data, error } = await supabase.from('rooms').select(`*`);
+  const { data, error } = await supabase.from("rooms").select(`*`);
 
   if (!data || error) return null;
 
   return data;
+};
+
+export const deleteLession = async (id: string) => {
+  try {
+    if (!id) {
+      return {
+        status: 400,
+        message: "Id is required to delete a lession",
+      };
+    }
+
+    const user = await getAuthClaims();
+
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
+
+    const supabase = await createClient();
+
+    const { error } = await supabase
+      .from("create_lession")
+      .delete()
+      .eq("id", id);
+
+    if (error) return { message: error };
+
+    revalidatePath(`/dashboard/${user.user_role}`);
+
+    return;
+  } catch (error) {
+    return { "Server Error:": error };
+  }
 };
