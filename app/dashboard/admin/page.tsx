@@ -22,7 +22,7 @@ async function page() {
       <CreateLession rooms={rooms} />
 
       <section className="my-4 border">
-        <Lessions lessions={lessions} />
+        <Lessions lessions={lessions} rooms={rooms} />
       </section>
     </main>
   );
