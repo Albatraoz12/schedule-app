@@ -1,40 +1,38 @@
-'use client';
+"use client";
 
-import { createLession } from '@/app/actions/actions';
-import { useActionState } from 'react';
+import { createLession } from "@/app/actions/actions";
+import { useActionState } from "react";
 
 const CreateLession = ({ rooms }: any) => {
   const [state, action, isLoading] = useActionState(createLession, {
-    message: '',
+    message: "",
     success: false,
   });
-
-  console.log(rooms);
 
   return (
     <section>
       <h1>Create Lession</h1>
       <form action={action}>
-        <input type='date' name='date' id='date' />
+        <input type="date" name="date" id="date" />
         <input
-          type='time'
-          placeholder='hello'
-          name='lessionStart'
-          id='lessionStart'
+          type="time"
+          placeholder="hello"
+          name="lessionStart"
+          id="lessionStart"
         />
         <input
-          type='time'
-          placeholder='hello'
-          name='lessionEnd'
-          id='lessionEnd'
+          type="time"
+          placeholder="hello"
+          name="lessionEnd"
+          id="lessionEnd"
         />
         <input
-          type='text'
-          placeholder='Historia'
-          name='lessionName'
-          id='lessionName'
+          type="text"
+          placeholder="Historia"
+          name="lessionName"
+          id="lessionName"
         />
-        <select name='room' id='room'>
+        <select name="room" id="room">
           {rooms.map((room: any) => (
             <option key={room.id} value={room.id}>
               {room.name}
@@ -42,13 +40,13 @@ const CreateLession = ({ rooms }: any) => {
           ))}
         </select>
         <button disabled={isLoading}>
-          {isLoading ? 'creating...' : 'create'}
+          {isLoading ? "creating..." : "create"}
         </button>
       </form>
       {state.error ? (
-        <p className='text-red-600 text-sm'>{state.error}</p>
+        <p className="text-red-600 text-sm">{state.error}</p>
       ) : (
-        <p className='text-green-600 text-sm'>{state.message}</p>
+        <p className="text-green-600 text-sm">{state.message}</p>
       )}
     </section>
   );
