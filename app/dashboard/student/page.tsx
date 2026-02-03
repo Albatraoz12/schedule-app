@@ -2,6 +2,7 @@ import { getAuthClaims } from "@/lib/dal/user-dal";
 import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import LessionCalendar from "./components/LessionCalendar";
+import { logout } from "@/app/actions/actions";
 
 export default async function StudentDashboard() {
   const supabase = await createClient();
@@ -41,6 +42,12 @@ export default async function StudentDashboard() {
       <div className="mb-6">
         <h1 className="text-3xl font-bold">Mitt Schema</h1>
         <p className="text-gray-600">Här ser du alla dina lektioner</p>
+        <button
+          onClick={logout}
+          className="bg-red-600 text-white p-2 px-3 rounded cursor-pointer"
+        >
+          Log out
+        </button>
       </div>
 
       <LessionCalendar lessions={lessions || []} rooms={rooms || []} />
