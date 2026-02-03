@@ -14,7 +14,6 @@ export default async function StudentDashboard() {
 
   const { data: classes } = await supabase.from("class").select("*").single();
 
-  // // Hämta studentens lektioner
   const { data: lessions, error: lessionsError } = await supabase
     .from("create_lession")
     .select(
@@ -35,7 +34,6 @@ export default async function StudentDashboard() {
     return <div>Kunde inte hämta lektioner</div>;
   }
 
-  // Hämta alla rum för färgkodning
   const { data: rooms } = await supabase.from("rooms").select("*");
 
   return (

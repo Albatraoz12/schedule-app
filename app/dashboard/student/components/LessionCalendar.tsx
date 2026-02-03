@@ -5,7 +5,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import svLocale from "@fullcalendar/core/locales/sv";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface Room {
   id: string;
@@ -32,7 +32,26 @@ export default function LessionCalendar({
   lessions,
   rooms,
 }: LessionCalendarProps) {
-  // Formatera lektioner för FullCalendar
+  const [isMobile, setIsMobile] = useState(false);
+  const calendarRef = useRef<FullCalendar>(null);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+
+      if (calendarRef.current) {
+        const calendarApi = calendarRef.current.getApi();
+        calendarApi.changeView(mobile ? "timeGridDay" : "timeGridWeek");
+      }
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   const events = lessions.map((lession) => {
     const room = lession.rooms || rooms.find((r) => r.id === lession.room_id);
 
@@ -41,8 +60,8 @@ export default function LessionCalendar({
       title: lession.name,
       start: `${lession.date}T${lession.lession_start}`,
       end: `${lession.date}T${lession.lession_end}`,
-      backgroundColor: "#3788d8", // ✅ Direkt blå färg
-      borderColor: "#3788d8", // ✅ Direkt blå färg
+      backgroundColor: "#3788d8",
+      borderColor: "#3788d8",
       extendedProps: {
         lession: lession,
         roomName: room?.name || "Okänt rum",
@@ -53,18 +72,30 @@ export default function LessionCalendar({
   return (
     <>
       <div
-        className="bg-white rounded-lg shadow-lg p-4"
-        style={{ height: "800px" }}
+        className="bg-white rounded-lg shadow-lg p-2 md:p-4"
+        style={{
+          height: isMobile ? "600px" : "800px",
+          fontSize: "12px",
+        }}
       >
         <FullCalendar
+          ref={calendarRef}
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-          initialView="timeGridWeek"
+          initialView={isMobile ? "timeGridDay" : "timeGridWeek"}
           locale={svLocale}
-          headerToolbar={{
-            left: "prev,next today",
-            center: "title",
-            right: "dayGridMonth,timeGridWeek,timeGridDay",
-          }}
+          headerToolbar={
+            isMobile
+              ? {
+                  left: "prev,next",
+                  center: "title",
+                  right: "",
+                }
+              : {
+                  left: "prev,next today",
+                  center: "title",
+                  right: "dayGridMonth,timeGridWeek,timeGridDay",
+                }
+          }
           slotMinTime="07:00:00"
           slotMaxTime="18:00:00"
           slotDuration="00:30:00"
@@ -86,7 +117,11 @@ export default function LessionCalendar({
           eventContent={(arg) => {
             return (
               <div className="p-1">
-                <div className="font-semibold text-sm">{arg.event.title}</div>
+                <div
+                  className={`font-semibold ${isMobile ? "text-xs" : "text-sm"}`}
+                >
+                  {arg.event.title}
+                </div>
                 <div className="text-xs">
                   {arg.event.extendedProps.roomName}
                 </div>
