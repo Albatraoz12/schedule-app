@@ -8,7 +8,6 @@ const UpdateLession = ({ lession, onCancel, rooms }: any) => {
     message: "",
     success: false,
   });
-  console.log(state.success);
 
   useEffect(() => {
     if (state.success) {
