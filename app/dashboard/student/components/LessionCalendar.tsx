@@ -86,14 +86,14 @@ export default function LessionCalendar({
           headerToolbar={
             isMobile
               ? {
-                  left: "prev,next",
+                  right: "prev,next",
                   center: "title",
-                  right: "",
+                  left: "",
                 }
               : {
-                  left: "prev,next today",
+                  right: "today prev,next",
                   center: "title",
-                  right: "dayGridMonth,timeGridWeek,timeGridDay",
+                  left: "dayGridMonth,timeGridWeek,timeGridDay",
                 }
           }
           slotMinTime="07:00:00"
