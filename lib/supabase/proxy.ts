@@ -32,7 +32,9 @@ export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const isDashboard = pathname.startsWith("/dashboard");
 
-  // Om inloggad -> signin
+  // routes användaren kan vara i om inloggad.
+  // användaren kan endast vara i dashboarden då det är den enda sidan som finns för tillfället.
+
   if (user && !isDashboard) {
     const allowed = `/dashboard/${role}`;
     if (!pathname.startsWith(allowed)) {
@@ -41,16 +43,13 @@ export async function updateSession(request: NextRequest) {
   }
 
   if (!user && isDashboard) {
-    // Ej inloggad → dashboard
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  // Inloggad men saknar roll
   if (user && !role && isDashboard) {
     return NextResponse.redirect(new URL("/error", request.url));
   }
 
-  // Fel dashboard
   if (user && role && isDashboard) {
     const allowed = `/dashboard/${role}`;
     if (!pathname.startsWith(allowed)) {
