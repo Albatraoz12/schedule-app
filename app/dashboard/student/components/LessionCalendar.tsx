@@ -6,27 +6,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import svLocale from "@fullcalendar/core/locales/sv";
 import { useState, useEffect, useRef } from "react";
-
-interface Room {
-  id: string;
-  name: string;
-}
-
-interface Lession {
-  id: string;
-  date: string;
-  lession_start: string;
-  lession_end: string;
-  name: string;
-  class_id: string;
-  room_id: string;
-  rooms?: Room;
-}
-
-interface LessionCalendarProps {
-  lessions: Lession[];
-  rooms: Room[];
-}
+import { LessionCalendarProps } from "@/types/databse";
 
 export default function LessionCalendar({
   lessions,
