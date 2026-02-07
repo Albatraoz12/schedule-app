@@ -37,12 +37,7 @@ export async function login(
     return { error: error.message, success: false };
   }
 
-  const isAuthenticated = await getAuthClaims();
-
-  if (!isAuthenticated) return { error: isAuthenticated, success: false };
-
-  revalidatePath("/", "layout");
-  redirect(`/dashboard/${isAuthenticated.user_role}`);
+  redirect("/");
 }
 
 export async function logout() {
