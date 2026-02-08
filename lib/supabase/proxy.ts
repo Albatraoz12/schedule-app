@@ -25,29 +25,20 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  const { data } = await supabase.auth.getClaims();
-  const user = data?.claims;
-  const role = user?.user_role as string | undefined;
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const role = user?.app_metadata?.user_role;
 
   const pathname = request.nextUrl.pathname;
   const isDashboard = pathname.startsWith("/dashboard");
-
-  // routes användaren kan vara i om inloggad.
-  // användaren kan endast vara i dashboarden då det är den enda sidan som finns för tillfället.
-
-  if (user && !isDashboard) {
-    const allowed = `/dashboard/${role}`;
-    if (!pathname.startsWith(allowed)) {
-      return NextResponse.redirect(new URL(allowed, request.url));
-    }
-  }
 
   if (!user && isDashboard) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  if (user && !role && isDashboard) {
-    return NextResponse.redirect(new URL("/error", request.url));
+  if (user && !isDashboard) {
+    return NextResponse.redirect(new URL(`/dashboard/${role}`, request.url));
   }
 
   if (user && role && isDashboard) {

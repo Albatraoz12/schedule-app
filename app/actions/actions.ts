@@ -23,12 +23,12 @@ export async function login(
   const password = formData.get("password");
 
   if (typeof email !== "string" || typeof password !== "string") {
-    return { error: "Email eller lösenord saknas", success: false };
+    return { error: "Email or password is missing", success: false };
   }
 
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
@@ -37,7 +37,7 @@ export async function login(
     return { error: error.message, success: false };
   }
 
-  redirect("/");
+  redirect(`/dashboard/${data.user.app_metadata.user_role}`);
 }
 
 export async function logout() {
