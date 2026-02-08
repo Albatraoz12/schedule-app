@@ -1,15 +1,15 @@
-import { getAuthClaims, getAuthenticatedUser } from "@/lib/dal/user-dal";
 import { getLessions, getRooms } from "@/lib/dal/lessions/lessions-dal";
-import { logout } from "@/app/actions/actions";
+import { getAuthenticatedUser } from "@/lib/dal/user-dal";
+import { Suspense } from "react";
 import CreateLession from "../components/CreateLession";
 import LessionCalendar from "./components/LessionCalendar";
+import { redirect } from "next/navigation";
+import { logout } from "@/app/actions/actions";
 
-async function page() {
-  const [user, lessions, rooms] = await Promise.all([
-    getAuthenticatedUser(),
-    getLessions(),
-    getRooms(),
-  ]);
+export default async function Page() {
+  const user = await getAuthenticatedUser();
+
+  if (!user) redirect("/");
 
   return (
     <main className="p-5">
@@ -21,13 +21,23 @@ async function page() {
       >
         Log out
       </button>
-      <CreateLession rooms={rooms} />
 
-      <section className="my-4 border">
-        <LessionCalendar lessions={lessions || []} rooms={rooms || []} />
-      </section>
+      <Suspense fallback={<div>Loading lessons...</div>}>
+        <LessionsData />
+      </Suspense>
     </main>
   );
 }
 
-export default page;
+async function LessionsData() {
+  const [lessions, rooms] = await Promise.all([getLessions(), getRooms()]);
+
+  return (
+    <>
+      <CreateLession rooms={rooms} />
+      <section className="my-4 border">
+        <LessionCalendar lessions={lessions || []} rooms={rooms || []} />
+      </section>
+    </>
+  );
+}
