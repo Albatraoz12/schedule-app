@@ -5,6 +5,7 @@ import CreateLession from "../components/CreateLession";
 import LessionCalendar from "./components/LessionCalendar";
 import { redirect } from "next/navigation";
 import { logout } from "@/app/actions/actions";
+import Logout from "@/app/components/auth/Logout";
 
 export default async function Page() {
   const user = await getAuthenticatedUser();
@@ -15,12 +16,7 @@ export default async function Page() {
     <main className="p-5">
       <h1>Welcome {user?.email}</h1>
       <p>You have the role of: [ {user?.role} ]</p>
-      <button
-        onClick={logout}
-        className="bg-red-600 text-white p-2 px-3 rounded cursor-pointer"
-      >
-        Log out
-      </button>
+      <Logout />
 
       <Suspense fallback={<div>Loading lessons...</div>}>
         <LessionsData />
