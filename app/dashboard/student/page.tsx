@@ -1,41 +1,13 @@
-import { getAuthClaims } from "@/lib/dal/user-dal";
-import { createClient } from "@/lib/supabase-server";
+import { getAuthenticatedUser } from "@/lib/dal/user-dal";
 import { redirect } from "next/navigation";
-import LessionCalendar from "./components/LessionCalendar";
 import { logout } from "@/app/actions/actions";
+import { LessionsData } from "../admin/page";
+import { Suspense } from "react";
 
 export default async function StudentDashboard() {
-  const supabase = await createClient();
+  const user = await getAuthenticatedUser();
 
-  const { data: user } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/login");
-  }
-
-  const { data: classes } = await supabase.from("class").select("*").single();
-
-  const { data: lessions, error: lessionsError } = await supabase
-    .from("create_lession")
-    .select(
-      `
-      *,
-      rooms:room_id (
-        id,
-        name
-      )
-    `,
-    )
-    .eq("class_id", classes?.id)
-    .order("date", { ascending: true })
-    .order("lession_start", { ascending: true });
-
-  if (lessionsError) {
-    console.error("Error fetching lessions:", lessionsError);
-    return <div>Kunde inte hämta lektioner</div>;
-  }
-
-  const { data: rooms } = await supabase.from("rooms").select("*");
+  if (!user) redirect("/");
 
   return (
     <div className="p-6">
@@ -50,7 +22,9 @@ export default async function StudentDashboard() {
         </button>
       </div>
 
-      <LessionCalendar lessions={lessions || []} rooms={rooms || []} />
+      <Suspense fallback={<div>Loading lessons...</div>}>
+        <LessionsData userId={user.id} />
+      </Suspense>
     </div>
   );
 }

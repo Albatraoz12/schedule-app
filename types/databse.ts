@@ -22,11 +22,13 @@ export interface LessionCalType {
   class_id: string;
   room_id: string;
   rooms?: Room;
+  user_id?: string;
 }
 
 export interface LessionCalendarProps {
   lessions: Lession[];
   rooms: Room[];
+  userId: string;
 }
 
 export interface LessionDetailsProps {

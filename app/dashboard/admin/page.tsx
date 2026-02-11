@@ -4,7 +4,6 @@ import { Suspense } from "react";
 import CreateLession from "../components/CreateLession";
 import LessionCalendar from "./components/LessionCalendar";
 import { redirect } from "next/navigation";
-import { logout } from "@/app/actions/actions";
 import Logout from "@/app/components/auth/Logout";
 
 export default async function Page() {
@@ -19,20 +18,24 @@ export default async function Page() {
       <Logout />
 
       <Suspense fallback={<div>Loading lessons...</div>}>
-        <LessionsData />
+        <LessionsData userId={user.id} />
       </Suspense>
     </main>
   );
 }
 
-async function LessionsData() {
+export async function LessionsData({ userId }: { userId: string }) {
   const [lessions, rooms] = await Promise.all([getLessions(), getRooms()]);
 
   return (
     <>
       <CreateLession rooms={rooms} />
       <section className="my-4 border">
-        <LessionCalendar lessions={lessions || []} rooms={rooms || []} />
+        <LessionCalendar
+          lessions={lessions || []}
+          rooms={rooms || []}
+          userId={userId}
+        />
       </section>
     </>
   );
