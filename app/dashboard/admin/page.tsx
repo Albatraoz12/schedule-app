@@ -30,7 +30,7 @@ export async function LessionsData({ userId }: { userId: string }) {
   return (
     <>
       <CreateLession rooms={rooms} />
-      <section className="my-4 border">
+      <section className="my-4">
         <LessionCalendar
           lessions={lessions || []}
           rooms={rooms || []}
