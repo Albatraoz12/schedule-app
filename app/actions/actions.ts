@@ -17,7 +17,7 @@ type lessionSate = {
 
 export async function login(
   prevState: LoginState,
-  formData: FormData,
+  formData: FormData
 ): Promise<LoginState> {
   const email = formData.get("email");
   const password = formData.get("password");
@@ -49,7 +49,7 @@ export async function logout() {
 
 export async function createLession(
   prevState: lessionSate,
-  formData: FormData,
+  formData: FormData
 ): Promise<lessionSate> {
   const user = await getAuthenticatedUser();
 
@@ -60,12 +60,20 @@ export async function createLession(
   const lession_end = formData.get("lessionEnd") as string;
   const name = formData.get("lessionName") as string;
   const room_id = formData.get("room") as string;
+  const klass = formData.get("klass") as string;
 
   if (!date || !lession_start || !lession_end || !name)
     return {
       error: "All fields must be filled",
       success: false,
     };
+
+  if (lession_start > lession_end) {
+    return {
+      error: "You cannot end a lession before starting!",
+      success: false,
+    };
+  }
 
   const supabase = await createClient();
 
@@ -98,7 +106,7 @@ export async function createLession(
       lession_end,
       name,
       user_id: user.id,
-      class_id: "5ae915cf-2a5b-40cb-a702-e9d097b2ab56",
+      class_id: klass,
       room_id: room_id,
     })
     .single();
@@ -118,7 +126,7 @@ export async function createLession(
 
 export async function updateLession(
   prevState: lessionSate,
-  formData: FormData,
+  formData: FormData
 ): Promise<lessionSate> {
   const user = await getAuthenticatedUser();
 
