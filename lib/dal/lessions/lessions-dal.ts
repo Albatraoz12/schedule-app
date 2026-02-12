@@ -49,14 +49,8 @@ export const getRooms = async () => {
   return data;
 };
 
-export const deleteLession = async (
-  prevState: any,
-  id: string,
-  formData?: FormData
-) => {
+export const deleteLession = async (prevState: any, id: string) => {
   try {
-    // const id = formData.get("id") as string;
-
     if (!id) {
       return {
         message: "Id is required to delete a lession",
