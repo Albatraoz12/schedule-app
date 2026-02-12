@@ -1,6 +1,6 @@
 // Data access layer to fetch data to the server/client?
 
-import { createClient } from "@/lib/supabase-server";
+import { createClient } from "@/lib/supabase/supabase-server";
 import { AuthClaimsDTO, UserDTO } from "./user-dto";
 import { cache } from "react";
 

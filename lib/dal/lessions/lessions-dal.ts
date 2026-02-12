@@ -1,5 +1,5 @@
 "use server";
-import { createClient } from "@/lib/supabase-server";
+import { createClient } from "@/lib/supabase/supabase-server";
 import { cache } from "react";
 import { getAuthClaims } from "../user-dal";
 import { revalidatePath } from "next/cache";
