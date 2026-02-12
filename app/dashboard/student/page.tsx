@@ -23,7 +23,7 @@ export default async function StudentDashboard() {
       </div>
 
       <Suspense fallback={<div>Loading lessons...</div>}>
-        <LessionsData userId={user.id} />
+        <LessionsData userId={user.id} userRole={user.role} />
       </Suspense>
     </div>
   );

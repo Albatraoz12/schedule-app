@@ -19,22 +19,31 @@ export default async function Page() {
       <Logout />
 
       <Suspense fallback={<div>Loading lessons...</div>}>
-        <LessionsData userId={user.id} />
+        <LessionsData userId={user.id} userRole={user.role} />
       </Suspense>
     </main>
   );
 }
 
-export async function LessionsData({ userId }: { userId: string }) {
+export async function LessionsData({
+  userId,
+  userRole,
+}: {
+  userId: string;
+  userRole: string;
+}) {
   const [lessions, rooms, classes] = await Promise.all([
     getLessions(),
     getRooms(),
     getClasses(),
   ]);
+  console.log(userRole);
 
   return (
     <>
-      <CreateLession rooms={rooms} classes={classes} />
+      {userRole && (userRole === "admin" || userRole === "teacher") && (
+        <CreateLession rooms={rooms} classes={classes} />
+      )}
       <section className="my-4">
         <LessionCalendar
           lessions={lessions || []}
