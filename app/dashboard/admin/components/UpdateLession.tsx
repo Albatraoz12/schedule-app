@@ -143,7 +143,7 @@ const UpdateLession = ({ lession, rooms, onClose }: LessionDetailsProps) => {
             type="button"
             disabled={isDeleting}
             onClick={handleDelete}
-            className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition disabled:opacity-50"
+            className="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition disabled:opacity-50 cursor-pointer"
           >
             {isDeleting ? "Deleting..." : "Delete"}
           </button>
@@ -151,7 +151,7 @@ const UpdateLession = ({ lession, rooms, onClose }: LessionDetailsProps) => {
           <button
             type="submit"
             disabled={isLoading}
-            className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+            className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 cursor-pointer"
           >
             {isLoading ? "Updating..." : "Update"}
           </button>
