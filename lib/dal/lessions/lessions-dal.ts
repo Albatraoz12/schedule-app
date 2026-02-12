@@ -1,20 +1,17 @@
 "use server";
 import { createClient } from "@/lib/supabase/supabase-server";
 import { cache } from "react";
-import { getAuthClaims } from "../user-dal";
+import { getAuthenticatedUser } from "../user/user-dal";
 import { revalidatePath } from "next/cache";
 
 export const getLessions = cache(async () => {
-  const supabase = await createClient();
+  const user = await getAuthenticatedUser();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
+  if (!user) {
     throw new Error("Unauthorized");
   }
+
+  const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("create_lession")
@@ -37,7 +34,7 @@ export const getLessions = cache(async () => {
 });
 
 export const getRooms = async () => {
-  const user = await getAuthClaims();
+  const user = await getAuthenticatedUser();
 
   if (!user) {
     throw new Error("Unauthorized");
@@ -61,7 +58,7 @@ export const deleteLession = async (id: string) => {
       };
     }
 
-    const user = await getAuthClaims();
+    const user = await getAuthenticatedUser();
 
     if (!user) {
       throw new Error("Unauthorized");
@@ -76,7 +73,7 @@ export const deleteLession = async (id: string) => {
 
     if (error) return { message: error };
 
-    revalidatePath(`/dashboard/${user.user_role}`);
+    revalidatePath(`/dashboard/${user.role}`);
 
     return;
   } catch (error) {

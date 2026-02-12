@@ -1,5 +1,5 @@
 import { getLessions, getRooms } from "@/lib/dal/lessions/lessions-dal";
-import { getAuthenticatedUser } from "@/lib/dal/user-dal";
+import { getAuthenticatedUser } from "@/lib/dal/user/user-dal";
 import { Suspense } from "react";
 import CreateLession from "../components/CreateLession";
 import LessionCalendar from "./components/LessionCalendar";

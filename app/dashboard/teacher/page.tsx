@@ -1,4 +1,4 @@
-import { getAuthClaims } from "@/lib/dal/user-dal";
+import { getAuthClaims } from "@/lib/dal/user/user-dal";
 import { getLessions, getRooms } from "@/lib/dal/lessions/lessions-dal";
 import { logout } from "@/app/actions/actions";
 import CreateLession from "../components/CreateLession";

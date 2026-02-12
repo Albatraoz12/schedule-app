@@ -1,4 +1,4 @@
-import { getAuthenticatedUser } from "@/lib/dal/user-dal";
+import { getAuthenticatedUser } from "@/lib/dal/user/user-dal";
 import { redirect } from "next/navigation";
 import { logout } from "@/app/actions/actions";
 import { LessionsData } from "../admin/page";
