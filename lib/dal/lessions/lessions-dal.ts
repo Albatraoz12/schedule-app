@@ -20,7 +20,7 @@ export const getLessions = cache(async () => {
       *,
       class:class_id(id, class_name, teacher_id),
       room:room_id(id, name)
-    `,
+    `
     )
     .order("date", { ascending: true })
     .order("lession_start", { ascending: true });
@@ -55,6 +55,7 @@ export const deleteLession = async (id: string) => {
       return {
         status: 400,
         message: "Id is required to delete a lession",
+        success: false,
       };
     }
 
@@ -71,12 +72,20 @@ export const deleteLession = async (id: string) => {
       .delete()
       .eq("id", id);
 
-    if (error) return { message: error };
+    if (error) {
+      return {
+        message: error.message || "Failed to delete",
+        success: false,
+      };
+    }
 
     revalidatePath(`/dashboard/${user.role}`);
 
-    return;
+    return { success: true, message: "Lession deleted successfully" };
   } catch (error) {
-    return { "Server Error:": error };
+    return {
+      message: error instanceof Error ? error.message : "Server Error",
+      success: false,
+    };
   }
 };
