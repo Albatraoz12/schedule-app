@@ -12,7 +12,7 @@ export default async function getClasses() {
 
   const { data, error } = await supabase
     .from("class")
-    .select("class_name")
+    .select("class_name, id")
     .eq("teacher_id", user.id);
 
   if (error) {

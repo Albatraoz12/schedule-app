@@ -32,6 +32,13 @@ const CreateLession = ({ rooms, classes }: any) => {
           name="lessionName"
           id="lessionName"
         />
+        <select name="klass" id="klass">
+          {classes.map((klass: any) => (
+            <option key={klass.id} value={klass.id}>
+              {klass.class_name}
+            </option>
+          ))}
+        </select>
         <select name="room" id="room">
           {rooms.map((room: any) => (
             <option key={room.id} value={room.id}>
