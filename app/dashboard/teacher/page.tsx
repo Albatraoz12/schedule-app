@@ -2,7 +2,6 @@ import { getAuthClaims } from "@/lib/dal/user/user-dal";
 import { getLessions, getRooms } from "@/lib/dal/lessions/lessions-dal";
 import { logout } from "@/app/actions/actions";
 import CreateLession from "../components/CreateLession";
-import Lessions from "../components/Lessions";
 
 async function page() {
   const user = await getAuthClaims();
@@ -20,10 +19,6 @@ async function page() {
         Log out
       </button>
       <CreateLession rooms={rooms} />
-
-      <section className="my-4 border">
-        <Lessions lessions={lessions} rooms={rooms} />
-      </section>
     </main>
   );
 }

@@ -2,12 +2,12 @@ import { getLessions, getRooms } from "@/lib/dal/lessions/lessions-dal";
 import { getAuthenticatedUser } from "@/lib/dal/user/user-dal";
 import { Suspense } from "react";
 import CreateLession from "../components/CreateLession";
-import LessionCalendar from "./components/LessionCalendar";
+import LessionCalendar from "../components/LessionCalendar";
 import { redirect } from "next/navigation";
 import Logout from "@/app/components/auth/Logout";
 import getClasses from "@/lib/dal/class/class-dal";
 
-export default async function Page() {
+export default async function AdminPage() {
   const user = await getAuthenticatedUser();
 
   if (!user) redirect("/");
