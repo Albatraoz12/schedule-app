@@ -5,6 +5,7 @@ import CreateLession from "../components/CreateLession";
 import LessionCalendar from "./components/LessionCalendar";
 import { redirect } from "next/navigation";
 import Logout from "@/app/components/auth/Logout";
+import getClasses from "@/lib/dal/class/class-dal";
 
 export default async function Page() {
   const user = await getAuthenticatedUser();
@@ -25,11 +26,15 @@ export default async function Page() {
 }
 
 export async function LessionsData({ userId }: { userId: string }) {
-  const [lessions, rooms] = await Promise.all([getLessions(), getRooms()]);
+  const [lessions, rooms, classes] = await Promise.all([
+    getLessions(),
+    getRooms(),
+    getClasses(),
+  ]);
 
   return (
     <>
-      <CreateLession rooms={rooms} />
+      <CreateLession rooms={rooms} classes={classes} />
       <section className="my-4">
         <LessionCalendar
           lessions={lessions || []}

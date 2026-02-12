@@ -3,7 +3,7 @@
 import { createLession } from "@/app/actions/actions";
 import { useActionState } from "react";
 
-const CreateLession = ({ rooms }: any) => {
+const CreateLession = ({ rooms, classes }: any) => {
   const [state, action, isLoading] = useActionState(createLession, {
     message: "",
     success: false,
