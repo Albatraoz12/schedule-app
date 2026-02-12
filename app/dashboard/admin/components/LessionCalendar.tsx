@@ -59,7 +59,6 @@ export default function LessionCalendar({
   const handleEventClick = (info: any) => {
     setSelectedLession(info.event.extendedProps.lession);
     setShowDetails(true);
-    console.log(info.event.extendedProps.lession);
   };
 
   return (

@@ -49,11 +49,16 @@ export const getRooms = async () => {
   return data;
 };
 
-export const deleteLession = async (id: string) => {
+export const deleteLession = async (
+  prevState: any,
+  id: string,
+  formData?: FormData
+) => {
   try {
+    // const id = formData.get("id") as string;
+
     if (!id) {
       return {
-        status: 400,
         message: "Id is required to delete a lession",
         success: false,
       };
@@ -62,7 +67,10 @@ export const deleteLession = async (id: string) => {
     const user = await getAuthenticatedUser();
 
     if (!user) {
-      throw new Error("Unauthorized");
+      return {
+        message: "Unauthorized",
+        success: false,
+      };
     }
 
     const supabase = await createClient();

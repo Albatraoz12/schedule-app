@@ -2,7 +2,7 @@
 import { updateLession } from "@/app/actions/actions";
 import { deleteLession } from "@/lib/dal/lessions/lessions-dal";
 import { LessionDetailsProps } from "@/types/databse";
-import React, { useActionState, useEffect } from "react";
+import React, { startTransition, useActionState, useEffect } from "react";
 
 const UpdateLession = ({ lession, rooms, onClose }: LessionDetailsProps) => {
   const [state, action, isLoading] = useActionState(updateLession, {
@@ -10,19 +10,25 @@ const UpdateLession = ({ lession, rooms, onClose }: LessionDetailsProps) => {
     success: false,
   });
 
-  const handleDelete = async () => {
-    const res = await deleteLession(lession.id);
-
-    if (res?.success) {
-      onClose();
+  const [deleteState, deleteAction, isDeleting] = useActionState(
+    deleteLession,
+    {
+      message: "",
+      success: false,
     }
+  );
+
+  const handleDelete = () => {
+    startTransition(() => {
+      deleteAction(lession.id);
+    });
   };
 
   useEffect(() => {
-    if (state.success) {
+    if (state.success || deleteState.success) {
       onClose();
     }
-  }, [state.success, onClose]);
+  }, [state.success, deleteState.success, onClose]);
 
   return (
     <section
@@ -119,25 +125,27 @@ const UpdateLession = ({ lession, rooms, onClose }: LessionDetailsProps) => {
           </div>
         </div>
 
-        {state.message && !state.success && (
+        {(state.message && !state.success) ||
+        (deleteState.message && !deleteState.success) ? (
           <div className="mt-4 p-3 bg-red-100 text-red-700 rounded">
-            {state.message}
+            {state.message || deleteState.message}
           </div>
-        )}
+        ) : null}
 
-        {state.success && (
+        {(state.success || deleteState.success) && (
           <div className="mt-4 p-3 bg-green-100 text-green-700 rounded">
-            Lektionen uppdaterades!
+            {state.success ? "Lektionen uppdaterades!" : "Lektionen raderades!"}
           </div>
         )}
 
         <div className="mt-6 flex gap-3">
           <button
             type="button"
-            onClick={() => handleDelete()}
-            className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition"
+            disabled={isDeleting}
+            onClick={handleDelete}
+            className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition disabled:opacity-50"
           >
-            Delete
+            {isDeleting ? "Deleting..." : "Delete"}
           </button>
 
           <button
