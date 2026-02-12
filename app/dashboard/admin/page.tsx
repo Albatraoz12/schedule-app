@@ -37,7 +37,6 @@ export async function LessionsData({
     getRooms(),
     getClasses(),
   ]);
-  console.log(userRole);
 
   return (
     <>
