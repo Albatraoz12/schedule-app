@@ -68,7 +68,7 @@ export async function createLession(
       success: false,
     };
 
-  if (lession_start > lession_end) {
+  if (lession_start >= lession_end) {
     return {
       error: "You cannot end a lession before starting!",
       success: false,
@@ -144,6 +144,13 @@ export async function updateLession(
       error: "All fields must be filled",
       success: false,
     };
+
+  if (lession_start >= lession_end) {
+    return {
+      error: "You cannot end a lession before starting!",
+      success: false,
+    };
+  }
 
   const supabase = await createClient();
 
