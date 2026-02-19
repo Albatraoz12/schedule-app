@@ -6,6 +6,7 @@ import LessionCalendar from "../components/LessionCalendar";
 import { redirect } from "next/navigation";
 import Logout from "@/app/components/auth/Logout";
 import getClasses from "@/lib/dal/class/class-dal";
+import Link from "next/link";
 
 export default async function AdminPage() {
   const user = await getAuthenticatedUser();
@@ -16,6 +17,7 @@ export default async function AdminPage() {
     <main className="p-5">
       <h1>Welcome {user?.email}</h1>
       <p>You have the role of: [ {user?.role} ]</p>
+      <Link href="/dashboard/admin/findstudents">Find Students</Link>
       <Logout />
 
       <Suspense fallback={<div>Loading lessons...</div>}>
