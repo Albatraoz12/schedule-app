@@ -1,8 +1,9 @@
 "use client";
-import { updateLession } from "@/app/actions/actions";
-import { deleteLession } from "@/lib/dal/lessions/lessions-dal";
+import { updateLession, deleteLession } from "@/app/actions/actions";
 import { LessionDetailsProps } from "@/types/databse";
-import React, { startTransition, useActionState, useEffect } from "react";
+import React, { useActionState, useEffect } from "react";
+
+type Room = { id: string; name: string };
 
 const UpdateLession = ({ lession, rooms, onClose }: LessionDetailsProps) => {
   const [state, action, isLoading] = useActionState(updateLession, {
@@ -15,14 +16,8 @@ const UpdateLession = ({ lession, rooms, onClose }: LessionDetailsProps) => {
     {
       message: "",
       success: false,
-    }
+    },
   );
-
-  const handleDelete = () => {
-    startTransition(() => {
-      deleteAction(lession.id);
-    });
-  };
 
   useEffect(() => {
     if (state.success || deleteState.success) {
@@ -35,8 +30,7 @@ const UpdateLession = ({ lession, rooms, onClose }: LessionDetailsProps) => {
       className="fixed inset-0 bg-black/90 flex items-center justify-center z-50"
       onClick={onClose}
     >
-      <form
-        action={action}
+      <div
         className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4"
         onClick={(e) => e.stopPropagation()}
       >
@@ -51,13 +45,16 @@ const UpdateLession = ({ lession, rooms, onClose }: LessionDetailsProps) => {
           </button>
         </div>
 
-        <div className="space-y-3">
+        {/* Update form */}
+        <form action={action} className="space-y-3">
+          <input type="hidden" name="id" value={lession.id} />
+
           <div>
-            <input type="hidden" name="id" value={lession.id} />
             <label htmlFor="date" className="block text-sm font-medium">
               Date
             </label>
             <input
+              key={`date-${lession.date}`}
               type="date"
               name="date"
               id="date"
@@ -71,10 +68,11 @@ const UpdateLession = ({ lession, rooms, onClose }: LessionDetailsProps) => {
               Starts
             </label>
             <input
+              key={`start-${lession.lession_start}`}
               type="time"
-              defaultValue={lession.lession_start}
               name="lessionStart"
               id="lessionStart"
+              defaultValue={lession.lession_start}
               className="w-full border rounded px-3 py-2"
             />
           </div>
@@ -84,6 +82,7 @@ const UpdateLession = ({ lession, rooms, onClose }: LessionDetailsProps) => {
               Ends
             </label>
             <input
+              key={`end-${lession.lession_end}`}
               type="time"
               name="lessionEnd"
               id="lessionEnd"
@@ -94,14 +93,15 @@ const UpdateLession = ({ lession, rooms, onClose }: LessionDetailsProps) => {
 
           <div>
             <label htmlFor="lessionName" className="block text-sm font-medium">
-              Lession
+              Lesson
             </label>
             <input
+              key={`name-${lession.name}`}
               type="text"
               placeholder="Historia"
-              defaultValue={lession.name}
               name="lessionName"
               id="lessionName"
+              defaultValue={lession.name}
               className="w-full border rounded px-3 py-2"
             />
           </div>
@@ -111,52 +111,54 @@ const UpdateLession = ({ lession, rooms, onClose }: LessionDetailsProps) => {
               Room
             </label>
             <select
+              key={`room-${lession.room_id}`}
               name="room"
               id="room"
               defaultValue={lession.room_id}
               className="w-full border rounded px-3 py-2"
             >
-              {rooms.map((room: any) => (
+              {rooms.map((room: Room) => (
                 <option key={room.id} value={room.id}>
                   {room.name}
                 </option>
               ))}
             </select>
           </div>
-        </div>
 
-        {(state.message && !state.success) ||
-        (deleteState.message && !deleteState.success) ? (
-          <div className="mt-4 p-3 bg-red-100 text-red-700 rounded">
-            {state.message || deleteState.message}
-          </div>
-        ) : null}
-
-        {(state.success || deleteState.success) && (
-          <div className="mt-4 p-3 bg-green-100 text-green-700 rounded">
-            {state.success ? "Lektionen uppdaterades!" : "Lektionen raderades!"}
-          </div>
-        )}
-
-        <div className="mt-6 flex gap-3">
-          <button
-            type="button"
-            disabled={isDeleting}
-            onClick={handleDelete}
-            className="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition disabled:opacity-50 cursor-pointer"
-          >
-            {isDeleting ? "Deleting..." : "Delete"}
-          </button>
+          {state.message && !state.success && (
+            <div className="mt-4 p-3 bg-red-100 text-red-700 rounded">
+              {state.message}
+            </div>
+          )}
 
           <button
             type="submit"
             disabled={isLoading}
-            className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 cursor-pointer"
+            className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 cursor-pointer"
           >
             {isLoading ? "Updating..." : "Update"}
           </button>
-        </div>
-      </form>
+        </form>
+
+        {/* Delete form */}
+        <form action={deleteAction} className="mt-3">
+          <input type="hidden" name="id" value={lession.id} />
+
+          {deleteState.message && !deleteState.success && (
+            <div className="mb-3 p-3 bg-red-100 text-red-700 rounded">
+              {deleteState.message}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={isDeleting}
+            className="w-full bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition disabled:opacity-50 cursor-pointer"
+          >
+            {isDeleting ? "Deleting..." : "Delete"}
+          </button>
+        </form>
+      </div>
     </section>
   );
 };
