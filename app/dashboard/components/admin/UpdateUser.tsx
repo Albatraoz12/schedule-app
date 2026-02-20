@@ -3,13 +3,15 @@
 import { useActionState } from "react";
 import { Student } from "../../admin/findstudents/page";
 import { updateUser } from "@/app/actions/admin/adminActions";
+import { formatDate } from "@/lib/helper";
 
 const UpdateUser = ({ student }: { student: Student }) => {
   const [state, action, isLoading] = useActionState(updateUser, {
     message: "",
   });
+
   return (
-    <div key={student.id} className="border rounded-lg p-4 shadow-sm">
+    <div key={student.id} className="rounded-lg p-4 shadow-sm">
       <h2 className="text-lg font-semibold mb-4">{student.full_name}</h2>
       <form action={action} className="space-y-3">
         <h1>{student.id}</h1>
@@ -90,8 +92,8 @@ const UpdateUser = ({ student }: { student: Student }) => {
         </div>
 
         <div className="text-xs text-gray-400 mt-2">
-          <p>Created: {student.created_at}</p>
-          <p>Updated: {student.updated_at}</p>
+          <p>Created: {formatDate(student.created_at)}</p>
+          <p>Updated: {formatDate(student.updated_at)}</p>
         </div>
 
         <button
@@ -101,6 +103,9 @@ const UpdateUser = ({ student }: { student: Student }) => {
           {isLoading ? "Saving..." : "Save"}
         </button>
       </form>
+      {state.message && (
+        <p className="text-green-600 text-sm">User updated successfully</p>
+      )}
     </div>
   );
 };
