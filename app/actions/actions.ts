@@ -17,7 +17,7 @@ type lessionSate = {
 
 export async function login(
   prevState: LoginState,
-  formData: FormData
+  formData: FormData,
 ): Promise<LoginState> {
   const email = formData.get("email");
   const password = formData.get("password");
@@ -28,16 +28,35 @@ export async function login(
 
   const supabase = await createClient();
 
-  const { data, error } = await supabase.auth.signInWithPassword({
+  const { error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
 
   if (error) {
-    return { error: error.message, success: false };
+    return { error: "Invalid credentials", success: false };
   }
+
+  //Get users role after logged in and not from JWT
+  const user = await getAuthenticatedUser();
+
+  if (!user || !user.role) {
+    await supabase.auth.signOut();
+    return { error: "User not found", success: false };
+  }
+
+  // Validate what roles are avalible
+  const allowedRoles = ["admin", "teacher", "student"] as const;
+  type Role = (typeof allowedRoles)[number];
+
+  // If role dosent exict, dont go futher
+  if (!allowedRoles.includes(user.role as Role)) {
+    await supabase.auth.signOut();
+    return { error: "Invalid role", success: false };
+  }
+
   revalidatePath("/", "layout");
-  redirect(`/dashboard/${data.user.app_metadata.user_role}`);
+  redirect(`/dashboard/${user.role}`);
 }
 
 export async function logout() {
@@ -49,7 +68,7 @@ export async function logout() {
 
 export async function createLession(
   prevState: lessionSate,
-  formData: FormData
+  formData: FormData,
 ): Promise<lessionSate> {
   const user = await getAuthenticatedUser();
 
@@ -126,7 +145,7 @@ export async function createLession(
 
 export async function updateLession(
   prevState: lessionSate,
-  formData: FormData
+  formData: FormData,
 ): Promise<lessionSate> {
   const user = await getAuthenticatedUser();
 
