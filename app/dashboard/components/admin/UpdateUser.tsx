@@ -4,11 +4,11 @@ import { useActionState } from "react";
 import { Student } from "../../admin/findstudents/page";
 import { updateUser } from "@/app/actions/admin/adminActions";
 
-const UpdateUser = ({ students }: { students: Student[] }) => {
+const UpdateUser = ({ student }: { student: Student }) => {
   const [state, action, isLoading] = useActionState(updateUser, {
     message: "",
   });
-  return students.map((student: Student) => (
+  return (
     <div key={student.id} className="border rounded-lg p-4 shadow-sm">
       <h2 className="text-lg font-semibold mb-4">{student.full_name}</h2>
       <form action={action} className="space-y-3">
@@ -90,19 +90,19 @@ const UpdateUser = ({ students }: { students: Student[] }) => {
         </div>
 
         <div className="text-xs text-gray-400 mt-2">
-          <p>Skapad: {student.created_at}</p>
-          <p>Uppdaterad: {student.updated_at}</p>
+          <p>Created: {student.created_at}</p>
+          <p>Updated: {student.updated_at}</p>
         </div>
 
         <button
           type="submit"
           className="mt-2 bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700"
         >
-          Spara ändringar
+          {isLoading ? "Saving..." : "Save"}
         </button>
       </form>
     </div>
-  ));
+  );
 };
 
 export default UpdateUser;
