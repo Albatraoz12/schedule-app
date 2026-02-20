@@ -10,80 +10,94 @@ const UpdateUser = ({ student }: { student: Student }) => {
     message: "",
   });
 
+  const currentStudent = state.user ?? student;
+
   return (
-    <div key={student.id} className="rounded-lg p-4 shadow-sm">
-      <h2 className="text-lg font-semibold mb-4">{student.full_name}</h2>
+    <div className="rounded-lg p-4 shadow-sm">
+      <h2 className="text-lg font-semibold mb-4">{currentStudent.full_name}</h2>
       <form action={action} className="space-y-3">
-        <h1>{student.id}</h1>
+        <input type="hidden" name="id" value={currentStudent.id} />
+
         <div className="flex flex-col gap-1">
-          <input type="hidden" name="id" value={student.id} />
           <label
-            htmlFor={`fullName-${student.id}`}
+            htmlFor={`fullName-${currentStudent.id}`}
             className="text-sm font-medium"
           >
             Full name
           </label>
           <input
+            key={`fullName-${currentStudent.full_name}`}
             type="text"
-            id={`fullName-${student.id}`}
+            id={`fullName-${currentStudent.id}`}
             name="fullName"
-            defaultValue={student.full_name}
+            defaultValue={currentStudent.full_name}
             className="border rounded px-3 py-2 text-sm"
           />
         </div>
+
         <div className="flex flex-col gap-1">
           <label
-            htmlFor={`email-${student.id}`}
+            htmlFor={`email-${currentStudent.id}`}
             className="text-sm font-medium"
           >
             Email
           </label>
           <input
+            key={`email-${currentStudent.email}`}
             type="email"
-            id={`email-${student.id}`}
+            id={`email-${currentStudent.id}`}
             name="email"
-            defaultValue={student.email}
+            defaultValue={currentStudent.email}
             className="border rounded px-3 py-2 text-sm"
           />
         </div>
 
         <div className="flex flex-col gap-1">
           <label
-            htmlFor={`phone-${student.id}`}
+            htmlFor={`phone-${currentStudent.id}`}
             className="text-sm font-medium"
           >
             Telefon
           </label>
           <input
+            key={`phone-${currentStudent.phone}`}
             type="tel"
-            id={`phone-${student.id}`}
+            id={`phone-${currentStudent.id}`}
             name="phone"
-            defaultValue={student.phone}
+            defaultValue={currentStudent.phone}
             className="border rounded px-3 py-2 text-sm"
           />
         </div>
 
         <div className="flex flex-col gap-1">
-          <label htmlFor={`bio-${student.id}`} className="text-sm font-medium">
+          <label
+            htmlFor={`bio-${currentStudent.id}`}
+            className="text-sm font-medium"
+          >
             Bio
           </label>
           <textarea
-            id={`bio-${student.id}`}
+            key={`bio-${currentStudent.bio}`}
+            id={`bio-${currentStudent.id}`}
             name="bio"
-            defaultValue={student.bio}
+            defaultValue={currentStudent.bio}
             rows={3}
             className="border rounded px-3 py-2 text-sm resize-none"
           />
         </div>
 
         <div className="flex flex-col gap-1">
-          <label htmlFor={`role-${student.id}`} className="text-sm font-medium">
+          <label
+            htmlFor={`role-${currentStudent.id}`}
+            className="text-sm font-medium"
+          >
             Role
           </label>
           <select
-            id={`role-${student.id}`}
+            key={`role-${currentStudent.role}`}
+            id={`role-${currentStudent.id}`}
             name="role"
-            defaultValue={student.role}
+            defaultValue={currentStudent.role}
             className="border rounded px-3 py-2 text-sm"
           >
             <option value="student">Student</option>
@@ -92,19 +106,21 @@ const UpdateUser = ({ student }: { student: Student }) => {
         </div>
 
         <div className="text-xs text-gray-400 mt-2">
-          <p>Created: {formatDate(student.created_at)}</p>
-          <p>Updated: {formatDate(student.updated_at)}</p>
+          <p>Created: {formatDate(currentStudent.created_at)}</p>
+          <p>Updated: {formatDate(currentStudent.updated_at)}</p>
         </div>
 
         <button
           type="submit"
-          className="mt-2 bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700"
+          disabled={isLoading}
+          className="mt-2 bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? "Saving..." : "Save"}
         </button>
       </form>
+
       {state.message && (
-        <p className="text-green-600 text-sm">User updated successfully</p>
+        <p className="text-green-600 text-sm mt-2">{state.message}</p>
       )}
     </div>
   );

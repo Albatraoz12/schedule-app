@@ -1,11 +1,13 @@
 "use server";
 
+import { Student } from "@/app/dashboard/admin/findstudents/page";
 import { getAuthenticatedUser } from "@/lib/dal/user/user-dal";
 import { createClient } from "@/lib/supabase/supabase-server";
 import { revalidatePath } from "next/cache";
 
 type FormState = {
   message: string;
+  user?: Student;
 };
 
 export const updateUser = async (prevState: FormState, formData: FormData) => {
@@ -26,14 +28,16 @@ export const updateUser = async (prevState: FormState, formData: FormData) => {
 
   const supabase = await createClient();
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("profiles")
     .update({ full_name: fullName, email, phone, bio, role })
-    .eq("id", id);
+    .eq("id", id)
+    .select()
+    .single();
 
   if (error) return { message: error.message };
 
   revalidatePath("/admin/findstudents");
 
-  return { message: "Updated user" };
+  return { message: "Updated user", user: data };
 };
