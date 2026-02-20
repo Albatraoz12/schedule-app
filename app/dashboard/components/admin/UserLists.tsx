@@ -13,7 +13,7 @@ const UserLists = ({ students }: { students: Student[] }) => {
 
   return (
     <>
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 w-full h-full">
         {students.map((student: Student) => (
           <div
             key={student.id}
@@ -34,8 +34,8 @@ const UserLists = ({ students }: { students: Student[] }) => {
 
       {selectedStudent &&
         createPortal(
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          <section
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm w-full h-full"
             onClick={handleClose}
           >
             <div
@@ -44,14 +44,14 @@ const UserLists = ({ students }: { students: Student[] }) => {
             >
               <button
                 onClick={handleClose}
-                className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl font-bold"
+                className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl font-bold cursor-pointer"
               >
                 ✕
               </button>
 
               <UpdateUser student={selectedStudent} />
             </div>
-          </div>,
+          </section>,
           document.body
         )}
     </>
