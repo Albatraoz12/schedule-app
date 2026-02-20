@@ -220,3 +220,48 @@ export async function updateLession(
     success: true,
   };
 }
+
+export const deleteLession = async (prevState: any, formData: FormData) => {
+  try {
+    const id = formData.get("id") as string;
+
+    if (!id) {
+      return {
+        message: "Id is required to delete a lession",
+        success: false,
+      };
+    }
+
+    const user = await getAuthenticatedUser();
+
+    if (!user) {
+      return {
+        message: "Unauthorized",
+        success: false,
+      };
+    }
+
+    const supabase = await createClient();
+
+    const { error } = await supabase
+      .from("create_lession")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      return {
+        message: error.message || "Failed to delete",
+        success: false,
+      };
+    }
+
+    revalidatePath(`/dashboard/${user.role}`);
+
+    return { success: true, message: "Lession deleted successfully" };
+  } catch (error) {
+    return {
+      message: error instanceof Error ? error.message : "Server Error",
+      success: false,
+    };
+  }
+};
