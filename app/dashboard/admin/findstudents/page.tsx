@@ -1,5 +1,5 @@
 import { getAllStudents } from "@/lib/dal/admin/student-dal";
-import UpdateUser from "../../components/admin/UpdateUser";
+import UserLists from "../../components/admin/UserLists";
 
 export type Student = {
   id: string;
@@ -18,7 +18,7 @@ const FindStudents = async () => {
   return (
     <section className="max-w-2xl mx-auto p-4 space-y-6">
       {students && students.length > 0 ? (
-        <UpdateUser students={students} />
+        <UserLists students={students} />
       ) : (
         <p className="text-gray-500">Inga studenter hittades.</p>
       )}
