@@ -2,7 +2,9 @@
 import { createClient } from "@/lib/supabase/supabase-server";
 import { cache } from "react";
 import { getAuthenticatedUser } from "../user/user-dal";
+import { Room } from "@/types/databse";
 
+//Get all the lessions for the user
 export const getLessions = cache(async () => {
   const user = await getAuthenticatedUser();
 
@@ -12,6 +14,7 @@ export const getLessions = cache(async () => {
 
   const supabase = await createClient();
 
+  //RLS will decode JWT and return the correct data for the user
   const { data, error } = await supabase
     .from("create_lession")
     .select(
@@ -28,11 +31,12 @@ export const getLessions = cache(async () => {
     console.error("Error fetching lessons:", error);
     return [];
   }
-
+  console.log(data);
   return data ?? [];
 });
 
-export const getRooms = async () => {
+//Get all the avalible rooms
+export const getRooms = async (): Promise<Room[]> => {
   const user = await getAuthenticatedUser();
 
   if (!user) {
@@ -43,7 +47,7 @@ export const getRooms = async () => {
 
   const { data, error } = await supabase.from("rooms").select(`*`);
 
-  if (!data || error) return null;
+  if (!data || error) return [];
 
   return data;
 };

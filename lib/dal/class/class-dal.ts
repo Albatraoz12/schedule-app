@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/supabase-server";
 import { getAuthenticatedUser } from "../user/user-dal";
 
+// Funtion retrives all classes the user.id is the teacher for
 export default async function getClasses() {
   const user = await getAuthenticatedUser();
 

@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/supabase-server";
 import { getAuthenticatedUser } from "../user/user-dal";
 
+// Fetches all the users, only admins can do this
 export const getAllStudents = async () => {
   const user = await getAuthenticatedUser();
 
