@@ -1,6 +1,6 @@
 "use server";
 
-import { getAuthClaims, getAuthenticatedUser } from "@/lib/dal/user/user-dal";
+import { getAuthenticatedUser } from "@/lib/dal/user/user-dal";
 import { createClient } from "@/lib/supabase/supabase-server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
