@@ -2,7 +2,6 @@
 import { createClient } from "@/lib/supabase/supabase-server";
 import { cache } from "react";
 import { getAuthenticatedUser } from "../user/user-dal";
-import { revalidatePath } from "next/cache";
 
 export const getLessions = cache(async () => {
   const user = await getAuthenticatedUser();
