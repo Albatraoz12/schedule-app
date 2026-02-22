@@ -2,8 +2,13 @@
 
 import { getAuthenticatedUser } from "@/lib/dal/user/user-dal";
 import { createClient } from "@/lib/supabase/supabase-server";
-import { updateUserSchema } from "@/lib/schemas/user-schema";
+import {
+  createUserSchema,
+  CreateUserSchema,
+  updateUserSchema,
+} from "@/lib/schemas/user-schema";
 import { revalidatePath } from "next/cache";
+import { supabaseAdmin } from "@/lib/supabase/supabase.admin";
 
 type FormState = {
   message: string;
@@ -48,3 +53,44 @@ export const updateUser = async (
 
   return { message: "User Updated!", success: true, user: data };
 };
+
+export async function createUser(data: CreateUserSchema) {
+  const isUser = await getAuthenticatedUser();
+  if (!isUser) return { message: "Not authorized", success: false };
+
+  // Validera på serversidan också – aldrig lita enbart på klienten
+  const parsed = createUserSchema.safeParse(data);
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.flatten().fieldErrors };
+  }
+
+  const { email, password, full_name, role } = parsed.data;
+
+  const { data: user, error } = await supabaseAdmin.auth.admin.createUser({
+    email,
+    password,
+    email_confirm: true,
+    user_metadata: { full_name },
+    app_metadata: { user_roles: role },
+  });
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath("/dashboard/admin/findstudents");
+
+  return { success: true, user };
+}
+
+export async function deleteUser(userId: string) {
+  const isUser = await getAuthenticatedUser();
+  if (!isUser || isUser.role !== "admin") {
+    return { success: false, message: "Not authorized" };
+  }
+
+  const { error } = await supabaseAdmin.auth.admin.deleteUser(userId);
+
+  if (error) return { success: false, message: error.message };
+
+  revalidatePath("/admin/findstudents");
+  return { success: true, message: "Användaren raderades" };
+}

@@ -10,3 +10,12 @@ export const updateUserSchema = z.object({
 });
 
 export type UpdateUserInput = z.infer<typeof updateUserSchema>;
+
+export const createUserSchema = z.object({
+  email: z.string().email("Ogiltig e-postadress"),
+  password: z.string().min(8, "Lösenord måste vara minst 8 tecken"),
+  full_name: z.string().min(2, "Namn måste vara minst 2 tecken"),
+  role: z.enum(["teacher", "student"], "Välj en roll"),
+});
+
+export type CreateUserSchema = z.infer<typeof createUserSchema>;

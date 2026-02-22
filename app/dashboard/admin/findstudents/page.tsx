@@ -1,5 +1,6 @@
 import { getAllStudents } from "@/lib/dal/admin/student-dal";
 import UserLists from "../../components/admin/UserLists";
+import { CreateUserForm } from "../../components/admin/CreateUser";
 
 export type Student = {
   id: string;
@@ -22,6 +23,7 @@ const FindStudents = async () => {
       ) : (
         <p className="text-gray-500">Inga studenter hittades.</p>
       )}
+      <CreateUserForm />
     </section>
   );
 };
