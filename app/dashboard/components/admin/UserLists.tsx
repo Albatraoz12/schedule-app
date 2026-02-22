@@ -4,6 +4,7 @@ import { createPortal } from "react-dom";
 import { Student } from "../../admin/findstudents/page";
 import { RotateCw, Trash2 } from "lucide-react";
 import UpdateUser from "./UpdateUser";
+import { deleteUser } from "@/app/actions/admin/adminActions";
 
 const UserLists = ({ students }: { students: Student[] }) => {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
@@ -26,7 +27,11 @@ const UserLists = ({ students }: { students: Student[] }) => {
                 size={25}
                 onClick={() => handleOpen(student)}
               />
-              <Trash2 className="text-red-600 cursor-pointer" size={25} />
+              <Trash2
+                className="text-red-600 cursor-pointer"
+                size={25}
+                onClick={() => deleteUser(student.id)}
+              />
             </div>
           </div>
         ))}
@@ -52,7 +57,7 @@ const UserLists = ({ students }: { students: Student[] }) => {
               <UpdateUser student={selectedStudent} />
             </div>
           </section>,
-          document.body
+          document.body,
         )}
     </>
   );
