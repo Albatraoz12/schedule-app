@@ -31,7 +31,7 @@ export const getLessions = cache(async () => {
     console.error("Error fetching lessons:", error);
     return [];
   }
-  console.log(data);
+
   return data ?? [];
 });
 
