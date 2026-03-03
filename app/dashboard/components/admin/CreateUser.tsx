@@ -16,8 +16,6 @@ export function CreateUserForm({ classes }: any) {
     resolver: zodResolver(createUserSchema),
   });
 
-  console.log(classes);
-
   async function onSubmit(data: CreateUserSchema) {
     const result = await createUser(data);
 
