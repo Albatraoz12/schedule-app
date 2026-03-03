@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createUserSchema, CreateUserSchema } from "@/lib/schemas/user-schema";
 import { createUser } from "@/app/actions/admin/adminActions";
 
-export function CreateUserForm() {
+export function CreateUserForm({ classes }: any) {
   const {
     register,
     handleSubmit,
@@ -15,6 +15,8 @@ export function CreateUserForm() {
   } = useForm<CreateUserSchema>({
     resolver: zodResolver(createUserSchema),
   });
+
+  console.log(classes);
 
   async function onSubmit(data: CreateUserSchema) {
     const result = await createUser(data);
@@ -55,6 +57,22 @@ export function CreateUserForm() {
           <option value="student">Elev</option>
         </select>
         {errors.role && <p>{errors.role.message}</p>}
+      </div>
+
+      <div>
+        <select {...register("class")}>
+          <option value="">Välj klass</option>
+          {classes ? (
+            classes.map((cls: any) => (
+              <option key={cls.id} value={cls.id}>
+                {cls.class_name}
+              </option>
+            ))
+          ) : (
+            <option disabled>No classes, contact sys admin</option>
+          )}
+        </select>
+        {errors.class && <p>{errors.class.message}</p>}
       </div>
 
       <button type="submit" disabled={isSubmitting}>

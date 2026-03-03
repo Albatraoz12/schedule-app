@@ -30,6 +30,7 @@ export const updateUser = async (
     phone: formData.get("phone"),
     bio: formData.get("bio"),
     role: formData.get("role"),
+    class: formData.get("class"),
   });
 
   if (!result.success) {
@@ -58,14 +59,14 @@ export async function createUser(data: CreateUserSchema) {
   const isUser = await getAuthenticatedUser();
   if (!isUser) return { message: "Not authorized", success: false };
 
-  // Validera på serversidan också – aldrig lita enbart på klienten
   const parsed = createUserSchema.safeParse(data);
   if (!parsed.success) {
     return { success: false, error: parsed.error.flatten().fieldErrors };
   }
 
-  const { email, password, full_name, role } = parsed.data;
+  const { email, password, full_name, role, class: classId } = parsed.data;
 
+  // Create user
   const { data: user, error } = await supabaseAdmin.auth.admin.createUser({
     email,
     password,
@@ -76,8 +77,18 @@ export async function createUser(data: CreateUserSchema) {
 
   if (error) return { success: false, error: error.message };
 
-  revalidatePath("/dashboard/admin/findstudents");
+  // create class connection user to class
+  if (classId && user?.user) {
+    const { error: classError } = await supabaseAdmin
+      .from("class_students")
+      .insert({ student_id: user.user.id, class_id: classId });
 
+    if (classError) {
+      return { success: false, error: classError.message };
+    }
+  }
+
+  revalidatePath("/dashboard/admin/findstudents");
   return { success: true, user };
 }
 

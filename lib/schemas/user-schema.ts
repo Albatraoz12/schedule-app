@@ -16,6 +16,7 @@ export const createUserSchema = z.object({
   password: z.string().min(8, "Lösenord måste vara minst 8 tecken"),
   full_name: z.string().min(2, "Namn måste vara minst 2 tecken"),
   role: z.enum(["teacher", "student"], "Välj en roll"),
+  class: z.string().min(1, "Välj en class"),
 });
 
 export type CreateUserSchema = z.infer<typeof createUserSchema>;
