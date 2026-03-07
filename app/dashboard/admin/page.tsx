@@ -1,12 +1,14 @@
 import { getLessions, getRooms } from "@/lib/dal/lessions/lessions-dal";
-import { getAuthenticatedUser } from "@/lib/dal/user-dal";
+import { getAuthenticatedUser } from "@/lib/dal/user/user-dal";
 import { Suspense } from "react";
 import CreateLession from "../components/CreateLession";
-import LessionCalendar from "./components/LessionCalendar";
+import LessionCalendar from "../components/LessionCalendar";
 import { redirect } from "next/navigation";
-import { logout } from "@/app/actions/actions";
+import Logout from "@/app/components/auth/Logout";
+import getClasses from "@/lib/dal/class/class-dal";
+import Link from "next/link";
 
-export default async function Page() {
+export default async function AdminPage() {
   const user = await getAuthenticatedUser();
 
   if (!user) redirect("/");
@@ -15,28 +17,40 @@ export default async function Page() {
     <main className="p-5">
       <h1>Welcome {user?.email}</h1>
       <p>You have the role of: [ {user?.role} ]</p>
-      <button
-        onClick={logout}
-        className="bg-red-600 text-white p-2 px-3 rounded cursor-pointer"
-      >
-        Log out
-      </button>
+      <Link href="/dashboard/admin/findstudents">Find Students</Link>
+      <Logout />
 
       <Suspense fallback={<div>Loading lessons...</div>}>
-        <LessionsData />
+        <LessionsData userId={user.id} userRole={user.role} />
       </Suspense>
     </main>
   );
 }
 
-async function LessionsData() {
-  const [lessions, rooms] = await Promise.all([getLessions(), getRooms()]);
+export async function LessionsData({
+  userId,
+  userRole,
+}: {
+  userId: string;
+  userRole: string;
+}) {
+  const [lessions, rooms, classes] = await Promise.all([
+    getLessions(),
+    getRooms(),
+    getClasses(),
+  ]);
 
   return (
     <>
-      <CreateLession rooms={rooms} />
-      <section className="my-4 border">
-        <LessionCalendar lessions={lessions || []} rooms={rooms || []} />
+      {userRole && (userRole === "admin" || userRole === "teacher") && (
+        <CreateLession rooms={rooms} classes={classes} />
+      )}
+      <section className="my-4">
+        <LessionCalendar
+          lessions={lessions || []}
+          rooms={rooms || []}
+          userId={userId}
+        />
       </section>
     </>
   );

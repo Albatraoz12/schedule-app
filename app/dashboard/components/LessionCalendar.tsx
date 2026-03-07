@@ -8,13 +8,15 @@ import svLocale from "@fullcalendar/core/locales/sv";
 import { useEffect, useRef, useState } from "react";
 import LessionDetails from "./LessionDetails";
 import { LessionCalType, LessionCalendarProps } from "@/types/databse";
+import UpdateLession from "./UpdateLession";
 
 export default function LessionCalendar({
   lessions,
   rooms,
+  userId,
 }: LessionCalendarProps) {
   const [selectedLession, setSelectedLession] = useState<LessionCalType | null>(
-    null,
+    null
   );
   const [showDetails, setShowDetails] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -106,7 +108,9 @@ export default function LessionCalendar({
             return (
               <div className="p-1">
                 <div
-                  className={`font-semibold ${isMobile ? "text-xs" : "text-sm"}`}
+                  className={`font-semibold ${
+                    isMobile ? "text-xs" : "text-sm"
+                  }`}
                 >
                   {arg.event.title}
                 </div>
@@ -119,13 +123,21 @@ export default function LessionCalendar({
         />
       </div>
 
-      {showDetails && selectedLession && (
-        <LessionDetails
-          lession={selectedLession}
-          rooms={rooms}
-          onClose={() => setShowDetails(false)}
-        />
-      )}
+      {showDetails &&
+        selectedLession &&
+        (userId === selectedLession.user_id ? (
+          <UpdateLession
+            lession={selectedLession}
+            rooms={rooms}
+            onClose={() => setShowDetails(false)}
+          />
+        ) : (
+          <LessionDetails
+            lession={selectedLession}
+            rooms={rooms}
+            onClose={() => setShowDetails(false)}
+          />
+        ))}
     </>
   );
 }

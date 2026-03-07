@@ -8,7 +8,6 @@ export default function LessionDetails({
   onClose,
 }: LessionDetailsProps) {
   const room = lession.rooms || rooms.find((r) => r.id === lession.room_id);
-  console.log(room);
 
   // Formatera datum till svenskt format
   const formatDate = (dateString: string) => {

@@ -1,21 +1,20 @@
 "use server";
-import { createClient } from "@/lib/supabase-server";
+import { createClient } from "@/lib/supabase/supabase-server";
 import { cache } from "react";
-import { getAuthClaims } from "../user-dal";
-import { revalidatePath } from "next/cache";
+import { getAuthenticatedUser } from "../user/user-dal";
+import { Room } from "@/types/databse";
 
+//Get all the lessions for the user
 export const getLessions = cache(async () => {
-  const supabase = await createClient();
+  const user = await getAuthenticatedUser();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
+  if (!user) {
     throw new Error("Unauthorized");
   }
 
+  const supabase = await createClient();
+
+  //RLS will decode JWT and return the correct data for the user
   const { data, error } = await supabase
     .from("create_lession")
     .select(
@@ -36,8 +35,9 @@ export const getLessions = cache(async () => {
   return data ?? [];
 });
 
-export const getRooms = async () => {
-  const user = await getAuthClaims();
+//Get all the avalible rooms
+export const getRooms = async (): Promise<Room[]> => {
+  const user = await getAuthenticatedUser();
 
   if (!user) {
     throw new Error("Unauthorized");
@@ -47,39 +47,7 @@ export const getRooms = async () => {
 
   const { data, error } = await supabase.from("rooms").select(`*`);
 
-  if (!data || error) return null;
+  if (!data || error) return [];
 
   return data;
-};
-
-export const deleteLession = async (id: string) => {
-  try {
-    if (!id) {
-      return {
-        status: 400,
-        message: "Id is required to delete a lession",
-      };
-    }
-
-    const user = await getAuthClaims();
-
-    if (!user) {
-      throw new Error("Unauthorized");
-    }
-
-    const supabase = await createClient();
-
-    const { error } = await supabase
-      .from("create_lession")
-      .delete()
-      .eq("id", id);
-
-    if (error) return { message: error };
-
-    revalidatePath(`/dashboard/${user.user_role}`);
-
-    return;
-  } catch (error) {
-    return { "Server Error:": error };
-  }
 };

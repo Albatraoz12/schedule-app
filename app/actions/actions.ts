@@ -1,7 +1,7 @@
 "use server";
 
-import { getAuthClaims } from "@/lib/dal/user-dal";
-import { createClient } from "@/lib/supabase-server";
+import { getAuthenticatedUser } from "@/lib/dal/user/user-dal";
+import { createClient } from "@/lib/supabase/supabase-server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -28,22 +28,41 @@ export async function login(
 
   const supabase = await createClient();
 
-  const { data, error } = await supabase.auth.signInWithPassword({
+  const { error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
 
   if (error) {
-    return { error: error.message, success: false };
+    return { error: "Invalid credentials", success: false };
   }
 
-  redirect(`/dashboard/${data.user.app_metadata.user_role}`);
+  //Get users role after logged in and not from JWT
+  const user = await getAuthenticatedUser();
+
+  if (!user || !user.role) {
+    await supabase.auth.signOut();
+    return { error: "User not found", success: false };
+  }
+
+  // Validate what roles are avalible
+  const allowedRoles = ["admin", "teacher", "student"] as const;
+  type Role = (typeof allowedRoles)[number];
+
+  // If role dosent exict, dont go futher
+  if (!allowedRoles.includes(user.role as Role)) {
+    await supabase.auth.signOut();
+    return { error: "Invalid role", success: false };
+  }
+
+  revalidatePath("/", "layout");
+  redirect(`/dashboard/${user.role}`);
 }
 
 export async function logout() {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  revalidatePath("/");
+  revalidatePath("/", "layout");
   redirect("/");
 }
 
@@ -51,7 +70,7 @@ export async function createLession(
   prevState: lessionSate,
   formData: FormData,
 ): Promise<lessionSate> {
-  const user = await getAuthClaims();
+  const user = await getAuthenticatedUser();
 
   if (!user) return { error: "Not authorized", success: false };
 
@@ -60,12 +79,20 @@ export async function createLession(
   const lession_end = formData.get("lessionEnd") as string;
   const name = formData.get("lessionName") as string;
   const room_id = formData.get("room") as string;
+  const klass = formData.get("klass") as string;
 
   if (!date || !lession_start || !lession_end || !name)
     return {
       error: "All fields must be filled",
       success: false,
     };
+
+  if (lession_start >= lession_end) {
+    return {
+      error: "You cannot end a lession before starting!",
+      success: false,
+    };
+  }
 
   const supabase = await createClient();
 
@@ -97,8 +124,8 @@ export async function createLession(
       lession_start,
       lession_end,
       name,
-      user_id: user.sub,
-      class_id: "5ae915cf-2a5b-40cb-a702-e9d097b2ab56",
+      user_id: user.id,
+      class_id: klass,
       room_id: room_id,
     })
     .single();
@@ -109,7 +136,7 @@ export async function createLession(
       success: false,
     };
 
-  revalidatePath(`/dashboard/${user.user_role}`);
+  revalidatePath(`/dashboard/${user.role}`);
   return {
     message: "Successfully created a lesson",
     success: true,
@@ -120,7 +147,7 @@ export async function updateLession(
   prevState: lessionSate,
   formData: FormData,
 ): Promise<lessionSate> {
-  const user = await getAuthClaims();
+  const user = await getAuthenticatedUser();
 
   if (!user) return { error: "Not authorized", success: false };
 
@@ -136,6 +163,13 @@ export async function updateLession(
       error: "All fields must be filled",
       success: false,
     };
+
+  if (lession_start >= lession_end) {
+    return {
+      error: "You cannot end a lession before starting!",
+      success: false,
+    };
+  }
 
   const supabase = await createClient();
 
@@ -180,9 +214,54 @@ export async function updateLession(
       success: false,
     };
 
-  revalidatePath(`/dashboard/${user.user_role}`);
+  revalidatePath(`/dashboard/${user.role}`);
   return {
     message: "Successfully created a lesson",
     success: true,
   };
 }
+
+export const deleteLession = async (prevState: any, formData: FormData) => {
+  try {
+    const id = formData.get("id") as string;
+
+    if (!id) {
+      return {
+        message: "Id is required to delete a lession",
+        success: false,
+      };
+    }
+
+    const user = await getAuthenticatedUser();
+
+    if (!user) {
+      return {
+        message: "Unauthorized",
+        success: false,
+      };
+    }
+
+    const supabase = await createClient();
+
+    const { error } = await supabase
+      .from("create_lession")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      return {
+        message: error.message || "Failed to delete",
+        success: false,
+      };
+    }
+
+    revalidatePath(`/dashboard/${user.role}`);
+
+    return { success: true, message: "Lession deleted successfully" };
+  } catch (error) {
+    return {
+      message: error instanceof Error ? error.message : "Server Error",
+      success: false,
+    };
+  }
+};
